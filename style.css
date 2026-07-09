@@ -1,0 +1,87 @@
+/* ---- Water --------------------------------------------------------------- */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  /* Lighter "surface" blue at the top, deeper blue toward the bottom. */
+  background: linear-gradient(#3aa6f0 0%, #1e6fb8 45%, #0c3b6e 100%);
+}
+
+#ocean {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* ---- Fish track (crosses the screen horizontally) ----------------------- */
+.fish-track {
+  position: absolute;
+  top: var(--top);
+  /* Track starts off the right or left edge depending on direction. */
+  left: 0;
+  width: 0;            /* zero-width anchor; the fish itself carries its size */
+  height: 0;
+  animation-name: cross-screen-rl;   /* default direction: right → left */
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+.fish-track.ltr {
+  animation-name: cross-screen-lr;
+}
+
+@keyframes cross-screen-rl {
+  from { transform: translateX(110vw); }
+  to   { transform: translateX(-60vw); }
+}
+
+@keyframes cross-screen-lr {
+  from { transform: translateX(-60vw); }
+  to   { transform: translateX(110vw); }
+}
+
+/* ---- Fish (holds hue/flip, contains the slices) ------------------------- */
+.fish {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--size);
+  height: var(--size);
+  filter: hue-rotate(var(--hue, 0deg));
+  transform-origin: center center;
+  will-change: filter;
+}
+
+.fish.flip {
+  /* Flipping the whole fish makes an L→R swimmer out of our left-facing asset. */
+  transform: scaleX(-1);
+}
+
+/* ---- Slice (one vertical column of the fish; bobs on a sine wave) ------- */
+.slice {
+  position: absolute;
+  top: 0;
+  background-image: url("fish.png");
+  background-repeat: no-repeat;
+  background-size: var(--size) var(--size);
+  animation-name: swim;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+@keyframes swim {
+  0%, 100% { transform: translateY(calc(var(--amp) * -1)); }
+  50%      { transform: translateY(var(--amp)); }
+}
+
+/* Respect users who'd rather not see motion: stop the undulation
+   (the fish still drift across, but no bobbing). */
+@media (prefers-reduced-motion: reduce) {
+  .slice { animation: none; transform: none; }
+}
