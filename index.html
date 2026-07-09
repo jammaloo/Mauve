@@ -8,6 +8,53 @@
 </head>
 <body>
   <div id="ocean"></div>
+
+  <button id="gear" title="Settings" aria-label="Settings">⚙</button>
+
+  <div id="settings-panel" hidden role="dialog" aria-label="Swim settings">
+    <h2>Swim Settings</h2>
+
+    <div class="setting">
+      <div class="row">
+        <label for="slices">Slices</label>
+        <span class="value" id="slices-value"></span>
+      </div>
+      <input type="range" id="slices" min="5" max="40" step="1" value="20">
+    </div>
+
+    <div class="setting">
+      <div class="row">
+        <label for="overlap">Slice overlap</label>
+        <span class="value" id="overlap-value"></span>
+      </div>
+      <input type="range" id="overlap" min="0" max="8" step="1" value="1">
+    </div>
+
+    <div class="setting">
+      <div class="row">
+        <label for="amp">Wave amplitude</label>
+        <span class="value" id="amp-value"></span>
+      </div>
+      <input type="range" id="amp" min="0" max="20" step="1" value="2">
+    </div>
+
+    <div class="setting">
+      <div class="row">
+        <label for="period">Wave period</label>
+        <span class="value" id="period-value"></span>
+      </div>
+      <input type="range" id="period" min="0.2" max="4" step="0.1" value="1.2">
+    </div>
+
+    <div class="setting">
+      <div class="row">
+        <label for="phase">Phase step</label>
+        <span class="value" id="phase-value"></span>
+      </div>
+      <input type="range" id="phase" min="0" max="0.3" step="0.01" value="0.09">
+    </div>
+  </div>
+
   <script src="main.js"></script>
 </body>
 </html>

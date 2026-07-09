@@ -85,3 +85,91 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .slice { animation: none; transform: none; }
 }
+
+/* ---- Settings gear + panel ---------------------------------------------- */
+#gear {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  transition: background 0.15s ease, transform 0.15s ease;
+  z-index: 100;
+}
+
+#gear:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(45deg);
+}
+
+#settings-panel {
+  position: fixed;
+  right: 18px;
+  bottom: 74px;                /* sits just above the gear */
+  width: 240px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: rgba(8, 30, 60, 0.82);
+  color: #eaf3ff;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 13px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  z-index: 100;
+}
+
+#settings-panel[hidden] {
+  display: none;
+}
+
+#settings-panel h2 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #9fc4ee;
+}
+
+.setting {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.setting:last-child {
+  margin-bottom: 0;
+}
+
+.setting .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.setting label {
+  color: #cfe2f7;
+}
+
+.setting .value {
+  color: #8fb8e6;
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+}
+
+.setting input[type="range"] {
+  width: 100%;
+  accent-color: #5aa8ec;
+}

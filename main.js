@@ -1,11 +1,18 @@
 (() => {
   "use strict";
 
-  const SLICE_COUNT = 20;       // vertical slices per fish
-  const SLICE_OVERLAP = 1;      // px each slice bleeds into the next, so neighbours cover any seam
-  const SWIM_AMP = 2;           // px of vertical bob per slice ("slight")
-  const SWIM_PERIOD = 1.2;      // s for one full up-down bob
-  const PHASE_STEP = 0.09;      // s of delay between adjacent slices → travelling sine head→tail
+  /*
+   * Live settings — these are what the settings panel fiddles with.
+   * Amp / period / phase apply instantly; slice count rebuilds the fish.
+   * Defaults reflect the tweaked values committed in the previous commit.
+   */
+  const settings = {
+    sliceCount: 20,
+    sliceOverlap: 1,   // px each slice bleeds into the next, so neighbours cover any seam
+    swimAmp: 2,        // px of vertical bob per slice ("slight")
+    swimPeriod: 1.2,   // s for one full up-down bob
+    phaseStep: 0.09,   // s of delay between adjacent slices → travelling sine head→tail
+  };
 
   /*
    * One entry per fish on screen.
@@ -39,27 +46,27 @@
     fish.style.setProperty("--size", cfg.size + "px");
     fish.style.setProperty("--hue", cfg.hue + "deg");
 
-    const sliceW = cfg.size / SLICE_COUNT;
+    const sliceW = cfg.size / settings.sliceCount;
 
-    for (let i = 0; i < SLICE_COUNT; i++) {
+    for (let i = 0; i < settings.sliceCount; i++) {
       const slice = document.createElement("div");
       slice.className = "slice";
 
       // Each slice shows one column (+ overlap into the next). Slices lay out
-      // left→right, so slice 0 = the head and slice 9 = the tail.
-      slice.style.width = sliceW + SLICE_OVERLAP + "px";
+      // left→right, so slice 0 = the head and the last slice = the tail.
+      slice.style.width = sliceW + settings.sliceOverlap + "px";
       slice.style.left = i * sliceW + "px";
       slice.style.height = cfg.size + "px";
       slice.style.backgroundPositionX = -(i * sliceW) + "px";
 
-      // Head on top, tail at the bottom layer (10 → 1).
-      slice.style.zIndex = SLICE_COUNT - i;
+      // Head on top, tail at the bottom layer (count → 1).
+      slice.style.zIndex = settings.sliceCount - i;
 
       // Negative per-slice delay turns the single "swim" keyframe into a sine
       // wave that travels head→tail.
-      slice.style.setProperty("--amp", SWIM_AMP + "px");
-      slice.style.animationDuration = SWIM_PERIOD + "s";
-      slice.style.animationDelay = -(i * PHASE_STEP) + "s";
+      slice.style.setProperty("--amp", settings.swimAmp + "px");
+      slice.style.animationDuration = settings.swimPeriod + "s";
+      slice.style.animationDelay = -(i * settings.phaseStep) + "s";
 
       fish.appendChild(slice);
     }
@@ -68,5 +75,59 @@
     return track;
   }
 
-  FISH.forEach((cfg) => ocean.appendChild(buildFish(cfg)));
+  // ---- Rebuild the whole school (needed when slice count/overlap change) ----
+  function rebuild() {
+    ocean.innerHTML = "";
+    FISH.forEach((cfg) => ocean.appendChild(buildFish(cfg)));
+  }
+
+  // ---- Apply swim tuning instantly to existing slices (no rebuild) ---------
+  function applyLive() {
+    ocean.querySelectorAll(".slice").forEach((slice) => {
+      slice.style.setProperty("--amp", settings.swimAmp + "px");
+      slice.style.animationDuration = settings.swimPeriod + "s";
+      // Recompute per-slice delay from the slice's z-index (z = count - index
+      // → index = count - z), so this stays correct without tracking i.
+      const i = settings.sliceCount - parseInt(slice.style.zIndex, 10);
+      slice.style.animationDelay = -(i * settings.phaseStep) + "s";
+    });
+  }
+
+  rebuild();
+
+  // ---------------------------------------------------------------------------
+  // Settings panel wiring
+  // ---------------------------------------------------------------------------
+  const gear = document.getElementById("gear");
+  const panel = document.getElementById("settings-panel");
+
+  gear.addEventListener("click", () => {
+    panel.hidden = !panel.hidden;
+  });
+
+  // Each slider maps to a setting. `rebuild: true` means the change can alter
+  // slice geometry, so we rebuild; otherwise we apply live for smoothness.
+  const controls = [
+    { id: "slices",  key: "sliceCount",   rebuild: true,  format: (v) => v + " slices" },
+    { id: "overlap", key: "sliceOverlap", rebuild: true,  format: (v) => v + " px" },
+    { id: "amp",     key: "swimAmp",      rebuild: false, format: (v) => v + " px" },
+    { id: "period",  key: "swimPeriod",   rebuild: false, format: (v) => v + " s" },
+    { id: "phase",   key: "phaseStep",    rebuild: false, format: (v) => v + " s" },
+  ];
+
+  controls.forEach((c) => {
+    const slider = document.getElementById(c.id);
+    const valueLabel = document.getElementById(c.id + "-value");
+
+    // Initialise the readout to match the slider's current value.
+    valueLabel.textContent = c.format(parseFloat(slider.value));
+
+    slider.addEventListener("input", () => {
+      const v = parseFloat(slider.value);
+      settings[c.key] = v;
+      valueLabel.textContent = c.format(v);
+      if (c.rebuild) rebuild();
+      else applyLive();
+    });
+  });
 })();
