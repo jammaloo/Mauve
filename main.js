@@ -1,9 +1,9 @@
 (() => {
   "use strict";
 
-  const SLICE_COUNT = 10;       // vertical slices per fish
-  const SLICE_OVERLAP = 3;      // px each slice bleeds into the next, so neighbours cover any seam
-  const SWIM_AMP = 5;           // px of vertical bob per slice ("slight")
+  const SLICE_COUNT = 20;       // vertical slices per fish
+  const SLICE_OVERLAP = 1;      // px each slice bleeds into the next, so neighbours cover any seam
+  const SWIM_AMP = 2;           // px of vertical bob per slice ("slight")
   const SWIM_PERIOD = 1.2;      // s for one full up-down bob
   const PHASE_STEP = 0.09;      // s of delay between adjacent slices → travelling sine head→tail
 
