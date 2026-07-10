@@ -87,12 +87,6 @@ html, body {
   50%      { transform: translateY(var(--amp)); }
 }
 
-/* Respect users who'd rather not see motion: stop the undulation
-   (the fish still drift across, but no bobbing). */
-@media (prefers-reduced-motion: reduce) {
-  .slice { animation: none; transform: none; }
-}
-
 /* ---- Settings gear + panel ---------------------------------------------- */
 #gear {
   position: fixed;
