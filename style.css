@@ -4,17 +4,24 @@ html, body {
   padding: 0;
   height: 100%;
   overflow: hidden;
+  background: #0c3b6e;        /* fallback / base colour behind everything */
 }
 
-body {
-  /* Lighter "surface" blue at the top, deeper blue toward the bottom. */
+/* The crayon water sits behind the fish. It's a separate layer from #ocean
+   (whose contents JS rebuilds), so its texture survives rebuilds. */
+#water {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
   background: linear-gradient(#3aa6f0 0%, #1e6fb8 45%, #0c3b6e 100%);
+  filter: url(#crayon);
 }
 
 #ocean {
   position: fixed;
   inset: 0;
   overflow: hidden;
+  z-index: 1;                 /* fish render above the textured water */
 }
 
 /* ---- Fish track (crosses the screen horizontally) ----------------------- */

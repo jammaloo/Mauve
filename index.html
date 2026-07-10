@@ -7,6 +7,20 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Crayon texture filter for the water. Hidden, referenced via url(#crayon).
+       Coarse displacement warps the gradient into an uneven waxy fill; a fine
+       turbulence layer blended in "overlay" adds the paper-tooth grain. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <filter id="crayon" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="4" result="warp"/>
+      <feDisplacementMap in="SourceGraphic" in2="warp" scale="8" xChannelSelector="R" yChannelSelector="G" result="warped"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="2" result="grain"/>
+      <feColorMatrix in="grain" type="saturate" values="0" result="mono"/>
+      <feBlend in="mono" in2="warped" mode="overlay"/>
+    </filter>
+  </svg>
+
+  <div id="water"></div>
   <div id="ocean"></div>
 
   <button id="gear" title="Settings" aria-label="Settings">
