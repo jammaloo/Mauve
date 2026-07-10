@@ -34,7 +34,25 @@
 
   const ocean = document.getElementById("ocean");
 
+  // Measure the source image so slices keep its true aspect ratio (works for
+  // square or non-square PNGs alike). `size` in each fish config is treated as
+  // the display HEIGHT; width is derived as height × (imgW / imgH).
+  function loadImage() {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = "fish.png";
+    });
+  }
+
+  let ASPECT = 1;        // width / height of the source image (updated on load)
+  let imageReady = false; // false until the source image has been measured
+
   function buildFish(cfg) {
+    const h = cfg.size;
+    const w = h * ASPECT;
+
     const track = document.createElement("div");
     track.className = "fish-track" + (cfg.ltr ? " ltr" : "");
     track.style.setProperty("--top", cfg.top);
@@ -43,10 +61,11 @@
 
     const fish = document.createElement("div");
     fish.className = "fish" + (cfg.ltr ? " flip" : "");
-    fish.style.setProperty("--size", cfg.size + "px");
+    fish.style.setProperty("--w", w + "px");
+    fish.style.setProperty("--h", h + "px");
     fish.style.setProperty("--hue", cfg.hue + "deg");
 
-    const sliceW = cfg.size / settings.sliceCount;
+    const sliceW = w / settings.sliceCount;
 
     for (let i = 0; i < settings.sliceCount; i++) {
       const slice = document.createElement("div");
@@ -56,7 +75,7 @@
       // left→right, so slice 0 = the head and the last slice = the tail.
       slice.style.width = sliceW + settings.sliceOverlap + "px";
       slice.style.left = i * sliceW + "px";
-      slice.style.height = cfg.size + "px";
+      slice.style.height = h + "px";
       slice.style.backgroundPositionX = -(i * sliceW) + "px";
 
       // Head on top, tail at the bottom layer (count → 1).
@@ -77,6 +96,7 @@
 
   // ---- Rebuild the whole school (needed when slice count/overlap change) ----
   function rebuild() {
+    if (!imageReady) return; // image dimensions unknown yet; load will trigger a rebuild
     ocean.innerHTML = "";
     FISH.forEach((cfg) => ocean.appendChild(buildFish(cfg)));
   }
@@ -93,7 +113,13 @@
     });
   }
 
-  rebuild();
+  // Spawn the school once the source image's dimensions are known, so slices
+  // can be sized to the image's true aspect ratio.
+  loadImage().then((img) => {
+    ASPECT = img.naturalWidth / img.naturalHeight;
+    imageReady = true;
+    rebuild();
+  });
 
   // ---------------------------------------------------------------------------
   // Settings panel wiring

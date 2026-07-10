@@ -50,8 +50,8 @@ body {
   position: absolute;
   left: 0;
   top: 0;
-  width: var(--size);
-  height: var(--size);
+  width: var(--w);            /* derived from height × image aspect ratio */
+  height: var(--h);
   filter: hue-rotate(var(--hue, 0deg));
   transform-origin: center center;
   will-change: filter;
@@ -68,7 +68,7 @@ body {
   top: 0;
   background-image: url("fish.png");
   background-repeat: no-repeat;
-  background-size: var(--size) var(--size);
+  background-size: var(--w) var(--h);
   animation-name: swim;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
